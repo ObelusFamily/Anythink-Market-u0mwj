@@ -1,3 +1,4 @@
+from ast import Param
 from typing import List, Optional, Sequence, Union
 
 from asyncpg import Connection, Record
@@ -108,6 +109,7 @@ class ItemsRepository(BaseRepository):  # noqa: WPS214
         favorited: Optional[str] = None,
         limit: int = 20,
         offset: int = 0,
+        title: Optional[str] = None,
         requested_user: Optional[User] = None,
     ) -> List[Item]:
         query_params: List[Union[str, int]] = []
@@ -136,6 +138,13 @@ class ItemsRepository(BaseRepository):  # noqa: WPS214
             ),
         )
         # fmt: on
+
+        if title:
+            # fmt: off
+            query = query.where(
+                items.title.ilike('%' + title + '%')
+            )
+            # fmt: on
 
         if tag:
             query_params.append(tag)
